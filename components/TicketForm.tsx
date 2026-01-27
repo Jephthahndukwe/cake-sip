@@ -30,7 +30,7 @@ const TicketForm = () => {
   });
 
   const ticketPrices = {
-    solo: 100,
+    solo: 25500,
     besties: 45500
   };
 
