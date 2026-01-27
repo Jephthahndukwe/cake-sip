@@ -448,14 +448,14 @@ const TicketForm = () => {
                 {/* Cake Name */}
                 <div>
                   <Label className="text-sm text-[#2a2420] mb-4 block">
-                    Name for Cake Decoration (Optional)
+                   Name You Will Write On The Cake  (Optional)
                   </Label>
                   <Input
                     name="cakeName"
                     type="text"
                     value={formData.cakeName}
                     onChange={handleInputChange}
-                    placeholder="e.g., Happy Birthday Sarah"
+                    placeholder="e.g., Chika"
                     className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
                     disabled={loading}
                   />
