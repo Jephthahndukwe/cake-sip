@@ -116,6 +116,67 @@ const TicketForm = () => {
         throw new Error('Paystack script not loaded. Please refresh the page and try again.');
       }
 
+      console.log('Initializing Paystack with amount:', totalAmount * 100);
+
+      const paystackHandler = {
+        callback: function(response: any) {
+          console.log('Paystack callback triggered:', response);
+          
+          const processPayment = async () => {
+            try {
+              const paymentData = {
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                ticketType: activeTab,
+                quantity: activeTab === 'solo' ? quantity : 1,
+                amount: totalAmount,
+                reference: response.reference,
+                cakeFlavors: formData.cakeFlavors,
+                decorationColor: formData.decorationColor,
+                cakeTopper: formData.cakeTopper,
+                cakeName: formData.cakeName,
+              };
+
+              const dbResult = await PaymentService.processPayment(paymentData);
+              
+              if (dbResult.success) {
+                toast({
+                  title: "Payment Successful!",
+                  description: `Transaction reference: ${response.reference}`,
+                  variant: "default",
+                });
+                
+                window.location.href = `/success?reference=${response.reference}`;
+              } else {
+                throw new Error(dbResult.error || 'Failed to save payment');
+              }
+            } catch (error) {
+              console.error('Error in payment callback:', error);
+              toast({
+                title: "Payment Processed",
+                description: `Payment successful but there was an issue saving your details. Reference: ${response.reference}`,
+                variant: "default",
+              });
+              
+              window.location.href = `/success?reference=${response.reference}`;
+            }
+            
+            setLoading(false);
+          };
+
+          processPayment();
+        },
+        onClose: function() {
+          toast({
+            title: "Payment Cancelled",
+            description: "You have cancelled the payment process",
+            variant: "destructive",
+          });
+          setLoading(false);
+        }
+      };
+
       const handler = window.PaystackPop.setup({
         key: 'pk_test_0f8a253cd66de6ad713434fb2b09052240908103',
         email: formData.email,
@@ -146,59 +207,13 @@ const TicketForm = () => {
             }
           ]
         },
-        callback: async function(response: any) {
-          try {
-            const paymentData = {
-              name: formData.name,
-              email: formData.email,
-              phone: formData.phone,
-              ticketType: activeTab,
-              quantity: activeTab === 'solo' ? quantity : 1,
-              amount: totalAmount,
-              reference: response.reference,
-              cakeFlavors: formData.cakeFlavors,
-              decorationColor: formData.decorationColor,
-              cakeTopper: formData.cakeTopper,
-              cakeName: formData.cakeName,
-            };
-
-            const dbResult = await PaymentService.processPayment(paymentData);
-            
-            if (dbResult.success) {
-              toast({
-                title: "Payment Successful!",
-                description: `Transaction reference: ${response.reference}`,
-                variant: "default",
-              });
-              
-              window.location.href = `/success?reference=${response.reference}`;
-            } else {
-              throw new Error(dbResult.error || 'Failed to save payment');
-            }
-          } catch (error) {
-            toast({
-              title: "Payment Processed",
-              description: `Payment successful but there was an issue saving your details. Reference: ${response.reference}`,
-              variant: "default",
-            });
-            
-            window.location.href = `/success?reference=${response.reference}`;
-          }
-          
-          setLoading(false);
-        },
-        onClose: function() {
-          toast({
-            title: "Payment Cancelled",
-            description: "You have cancelled the payment process",
-            variant: "destructive",
-          });
-          setLoading(false);
-        }
+        callback: paystackHandler.callback,
+        onClose: paystackHandler.onClose
       });
 
       handler.openIframe();
     } catch (error) {
+      console.error('Payment initialization error:', error);
       toast({
         title: "Payment Error",
         description: error instanceof Error ? error.message : "Failed to initialize payment. Please try again.",
