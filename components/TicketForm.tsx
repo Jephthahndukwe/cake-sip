@@ -178,7 +178,7 @@ const TicketForm = () => {
       };
 
       const handler = window.PaystackPop.setup({
-        key: 'pk_test_0f8a253cd66de6ad713434fb2b09052240908103',
+        key: 'pk_live_84ea73b42140d079929e4084e09b19daf2eff604',
         email: formData.email,
         amount: totalAmount * 100,
         currency: 'NGN',
