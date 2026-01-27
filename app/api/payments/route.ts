@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/cake_sip';
+const uri = process.env.MONGODB_URI || 'mongodb+srv://cruiseking:CruiseKing@123@cluster0.uwukyb8.mongodb.net/?appName=Cluster0';
 const client = new MongoClient(uri);
 
 export async function POST(request: NextRequest) {
