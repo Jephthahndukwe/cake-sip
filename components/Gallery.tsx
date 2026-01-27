@@ -4,9 +4,9 @@ import { useState } from "react";
 import { X } from "lucide-react";
 
 const galleryImages = [
-  { src: "/images/gallery-decorating.jpg", alt: "Cake decorating workshop" },
-  { src: "/images/gallery-cocktails.jpg", alt: "Signature cocktails" },
-  { src: "/images/gallery-fun.jpg", alt: "Event atmosphere" },
+  { src: "/images/CakeImg.jpeg", alt: "Cake decorating workshop" },
+  { src: "/images/CakeImg2.jpeg", alt: "Signature cocktails" },
+  { src: "/images/CakeImg3.jpeg", alt: "Event atmosphere" },
 ];
 
 const Gallery = () => {
