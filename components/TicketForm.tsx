@@ -27,6 +27,8 @@ const TicketForm = () => {
     decorationColor: "",
     cakeTopper: "",
     cakeName: "",
+    karaokeInterested: false,
+    karaokeSongChoice: "",
   });
 
   const ticketPrices = {
@@ -65,9 +67,10 @@ const TicketForm = () => {
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -136,6 +139,8 @@ const TicketForm = () => {
                 decorationColor: formData.decorationColor,
                 cakeTopper: formData.cakeTopper,
                 cakeName: formData.cakeName,
+                karaokeInterested: formData.karaokeInterested,
+                karaokeSongChoice: formData.karaokeSongChoice,
               };
 
               const dbResult = await PaymentService.processPayment(paymentData);
@@ -460,6 +465,64 @@ const TicketForm = () => {
                     disabled={loading}
                   />
                 </div>
+
+                
+              {/* Karaoke Section */}
+              <div className="border-t border-[#e5ddd3] pt-8 mt-8">
+                <h3 className="text-xs tracking-[0.2em] uppercase text-[#6b5d52] mb-6">
+                  Karaoke
+                </h3>
+                
+                <div className="mb-6">
+                  <Label className="text-sm text-[#2a2420] mb-4 block">
+                    Interested in Karaoke? 🎤
+                  </Label>
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="karaokeInterested"
+                        value="true"
+                        checked={formData.karaokeInterested === true}
+                        onChange={(e) => setFormData({...formData, karaokeInterested: true})}
+                        className="mr-2"
+                        disabled={loading}
+                      />
+                      <span className="text-sm text-[#2a2420]">Yes</span>
+                    </label>
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="karaokeInterested"
+                        value="false"
+                        checked={formData.karaokeInterested === false}
+                        onChange={(e) => setFormData({...formData, karaokeInterested: false, karaokeSongChoice: ''})}
+                        className="mr-2"
+                        disabled={loading}
+                      />
+                      <span className="text-sm text-[#2a2420]">No</span>
+                    </label>
+                  </div>
+                </div>
+
+                {formData.karaokeInterested && (
+                  <div>
+                    <Label className="text-sm text-[#2a2420] mb-4 block">
+                      If yes, please state your song choice (Optional)
+                    </Label>
+                    <Input
+                      name="karaokeSongChoice"
+                      type="text"
+                      value={formData.karaokeSongChoice}
+                      onChange={handleInputChange}
+                      placeholder="Enter your preferred song"
+                      className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
+                      disabled={loading}
+                    />
+                  </div>
+                )}
+              </div>
+
               </div>
 
               {/* Total & Submit */}

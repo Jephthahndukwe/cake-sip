@@ -10,6 +10,8 @@ interface PaymentData {
   decorationColor: string;
   cakeTopper: string;
   cakeName: string;
+  karaokeInterested: boolean;
+  karaokeSongChoice: string;
   status?: string;
   createdAt?: Date;
   updatedAt?: Date;
