@@ -183,7 +183,7 @@ const TicketForm = () => {
       };
 
       const handler = window.PaystackPop.setup({
-        key: 'pk_test_0f8a253cd66de6ad713434fb2b09052240908103',
+        key: 'pk_live_84ea73b42140d079929e4084e09b19daf2eff604',
         email: formData.email,
         amount: totalAmount * 100,
         currency: 'NGN',
@@ -453,14 +453,14 @@ const TicketForm = () => {
                 {/* Cake Name */}
                 <div>
                   <Label className="text-sm text-[#2a2420] mb-4 block">
-                    Name for Cake Decoration (Optional)
+                   Name You Will Write On The Cake  (Optional)
                   </Label>
                   <Input
                     name="cakeName"
                     type="text"
                     value={formData.cakeName}
                     onChange={handleInputChange}
-                    placeholder="e.g., Happy Birthday Sarah"
+                    placeholder="e.g., Chika"
                     className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
                     disabled={loading}
                   />

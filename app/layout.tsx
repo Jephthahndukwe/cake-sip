@@ -22,7 +22,7 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: "Cake & Sip 2.0 - Learn. Decorate. Vibe. Eat.",
-  description: "Join us for an unforgettable cake decorating experience with cocktails, karaoke, games, and amazing vibes. April 6th, 2026 at 2PM.",
+  description: "Join us for an unforgettable cake decorating experience with cocktails, karaoke, games, and amazing vibes.",
 };
 
 export default function RootLayout({
