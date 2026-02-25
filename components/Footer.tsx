@@ -14,7 +14,7 @@ const Footer = () => {
               Learn. Decorate. Vibe. Eat.
             </p>
             <p className="text-[#8b7d72] text-sm leading-relaxed">
-              An exclusive event by Kezz The Chef Confectionery.<br/>
+              An exclusive event by Kezz The Chef Confectionery.<br />
               Creating memorable experiences through the art of baking.
             </p>
           </div>
@@ -26,14 +26,27 @@ const Footer = () => {
               <p>2:00 PM Prompt</p>
               <p>Location Revealed Upon Purchase</p>
             </div>
-            <a 
-              href="https://instagram.com/Kezz_thechef"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#c8a882] hover:text-[#b89872] transition-colors text-sm tracking-wider"
-            >
-              @Kezz_thechef
-            </a>
+
+            {/* Instagram Handles */}
+            <div className="flex md:justify-end gap-6 text-sm tracking-wider">
+              <a
+                href="https://instagram.com/Kezz_thechef"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#c8a882] hover:text-[#b89872] transition-colors"
+              >
+                @Kezz_thechef
+              </a>
+
+              <a
+                href="https://www.instagram.com/ktccakeandsip"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#c8a882] hover:text-[#b89872] transition-colors"
+              >
+                @ktccakeandsip
+              </a>
+            </div>
           </div>
         </div>
 
