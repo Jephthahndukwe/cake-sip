@@ -19,7 +19,7 @@ const Contact = () => {
           </div>
 
           {/* Contact Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <a
               href="https://wa.me/2348064358275"
               target="_blank"
@@ -34,6 +34,21 @@ const Contact = () => {
                 +234 806 435 8275
               </p>
             </a>
+
+            <a
+  href="https://www.instagram.com/ktccakeandsip"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="group p-8 bg-white border border-[#e5ddd3] hover:border-[#c8a882] transition-all duration-300"
+>
+  <Instagram className="w-8 h-8 text-[#c8a882] mb-6 group-hover:scale-110 transition-transform duration-300" />
+  <h3 className="text-xs tracking-[0.2em] uppercase text-[#8b7d72] mb-3">
+    Instagram
+  </h3>
+  <p className="text-lg text-[#2a2420]">
+    @ktccakeandsip
+  </p>
+</a>
 
             <a
               href="https://instagram.com/Kezz_thechef"
