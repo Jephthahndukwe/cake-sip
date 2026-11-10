@@ -1,30 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, Poppins, Montserrat } from "next/font/google";
+import { Anton, Permanent_Marker, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  weight: ["300", "400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-});
+const anton = Anton({ variable: "--font-anton", weight: "400", subsets: ["latin"] });
+const marker = Permanent_Marker({ variable: "--font-pmarker", weight: "400", subsets: ["latin"] });
+const grotesk = Space_Grotesk({ variable: "--font-grotesk", weight: ["400", "500", "700"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Cake & Sip 2.0 - Learn. Decorate. Vibe. Eat.",
+  title: "Cake & Sip 3.0 — Denim's Drip",
   description:
-    "Join us for an unforgettable cake decorating experience with cocktails, karaoke, games, and amazing vibes.",
+    "Kezz The Chef presents Cake & Sip 3.0: Denim's Drip. Decorate your own cake, sip & chill, music, games, giveaways. Saturday, April 3rd 2027, 2PM, Dini Connection Hall.",
 };
 
 export default function RootLayout({
@@ -76,7 +63,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${inter.variable} ${poppins.variable} ${montserrat.variable} antialiased`}
+        className={`${anton.variable} ${marker.variable} ${grotesk.variable} antialiased`}
       >
         {children}
         <Toaster />

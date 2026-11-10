@@ -2,7 +2,8 @@ interface PaymentData {
   name: string;
   email: string;
   phone: string;
-  ticketType: 'solo' | 'besties';
+  ticketType: 'single' | 'bestie' | 'group';
+  attendeeType: 'decorator' | 'guest';
   quantity: number;
   amount: number;
   reference: string;

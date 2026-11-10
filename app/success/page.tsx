@@ -38,7 +38,7 @@ const SuccessPage = () => {
           </h1>
           
           <p className="text-xl text-[#6b5d52] mb-12 leading-relaxed max-w-lg mx-auto">
-            Thank you for your purchase! Your Cake & Sip 2.0 tickets have been confirmed.
+            Thank you for your purchase! Your Cake & Sip 3.0 tickets have been confirmed.
           </p>
 
           {/* Ticket Details Card */}
@@ -53,11 +53,11 @@ const SuccessPage = () => {
             <div className="space-y-4 text-lg">
               <div className="flex justify-between pb-4 border-b border-[#e5ddd3]">
                 <span className="text-[#8b7d72]">Event:</span>
-                <span className="font-medium text-[#2a2420]">Cake & Sip 2.0</span>
+                <span className="font-medium text-[#2a2420]">Cake & Sip 3.0</span>
               </div>
               <div className="flex justify-between pb-4 border-b border-[#e5ddd3]">
                 <span className="text-[#8b7d72]">Date:</span>
-                <span className="font-medium text-[#2a2420]">April 6th, 2026</span>
+                <span className="font-medium text-[#2a2420]">April 3rd, 2027</span>
               </div>
               <div className="flex justify-between pb-4 border-b border-[#e5ddd3]">
                 <span className="text-[#8b7d72]">Time:</span>

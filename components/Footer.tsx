@@ -1,66 +1,27 @@
-const Footer = () => {
-  return (
-    <footer className="bg-[#2a2420] text-white py-16 border-t border-[#4a4238]">
-      <div className="container px-6 mx-auto">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
-          {/* Brand */}
-          <div>
-            <h3 className="font-serif text-4xl mb-3">
-              Cake & Sip
-              <span className="text-[#c8a882] ml-2">2.0</span>
-            </h3>
-            <p className="text-[#d4cbc0] mb-6">
-              Learn. Decorate. Vibe. Eat.
-            </p>
-            <p className="text-[#8b7d72] text-sm leading-relaxed">
-              An exclusive event by Kezz The Chef Confectionery.<br />
-              Creating memorable experiences through the art of baking.
-            </p>
-          </div>
-
-          {/* Quick Info */}
-          <div className="md:text-right">
-            <div className="space-y-2 text-[#d4cbc0] mb-6">
-              <p>April 6, 2026</p>
-              <p>2:00 PM Prompt</p>
-              <p>Location Revealed Upon Purchase</p>
-            </div>
-
-            {/* Instagram Handles */}
-            <div className="flex md:justify-end gap-6 text-sm tracking-wider">
-              <a
-                href="https://instagram.com/Kezz_thechef"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#c8a882] hover:text-[#b89872] transition-colors"
-              >
-                @Kezz_thechef
-              </a>
-
-              <a
-                href="https://www.instagram.com/ktccakeandsip"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#c8a882] hover:text-[#b89872] transition-colors"
-              >
-                @ktccakeandsip
-              </a>
-            </div>
-          </div>
+const Footer = () => (
+  <footer className="denim-dark border-t-4 border-dashed border-gold/60 pt-16 pb-10 text-cream">
+    <div className="container px-5">
+      <div className="grid gap-10 md:grid-cols-2 items-end">
+        <div>
+          <h3 className="font-[family-name:var(--font-display)] uppercase text-6xl leading-none">
+            <span className="text-gold-shine">Cake</span> <span className="font-[family-name:var(--font-marker)] normal-case text-hotpink">&amp;</span>{" "}
+            <span className="text-denim-300">Sip</span> <span className="font-[family-name:var(--font-marker)] normal-case text-hotpink text-4xl">3.0</span>
+          </h3>
+          <p className="mt-3 font-[family-name:var(--font-marker)] text-denim-300 text-xl">Denim&apos;s Drip — see you in blue 💙</p>
+          <p className="mt-4 text-sm text-cream/60">By Kezz The Chef Confectionery.</p>
         </div>
-
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-[#4a4238]">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[#8b7d72] text-sm">
-            <p>
-              © {new Date().getFullYear()} Kezz The Chef Confectionery. All rights reserved.
-            </p>
+        <div className="md:text-right space-y-1 font-bold">
+          <p>Saturday, April 3rd 2027 · 2PM</p>
+          <p>Dini Connection Hall</p>
+          <div className="flex md:justify-end gap-5 pt-3 text-gold">
+            <a href="https://instagram.com/Kezz_thechef" target="_blank" rel="noopener noreferrer" className="hover:text-hotpink">@Kezz_thechef</a>
+            <a href="https://www.instagram.com/ktccakeandsip" target="_blank" rel="noopener noreferrer" className="hover:text-hotpink">@ktccakeandsip</a>
           </div>
         </div>
       </div>
-    </footer>
-  );
-};
+      <p className="mt-12 text-center text-xs text-cream/40">© {new Date().getFullYear()} Kezz The Chef Confectionery</p>
+    </div>
+  </footer>
+);
 
 export default Footer;

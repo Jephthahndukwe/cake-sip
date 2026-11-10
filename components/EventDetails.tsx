@@ -1,106 +1,41 @@
-"use client";
+import { Calendar, Clock, MapPin, Shirt } from "lucide-react";
 
-import { useEffect, useState } from "react";
-import { Calendar, Clock, MapPin } from "lucide-react";
+const details = [
+  { icon: Calendar, label: "When", value: "Saturday, April 3rd 2027" },
+  { icon: Clock, label: "Time", value: "2PM — come early for pics" },
+  { icon: MapPin, label: "Where", value: "Dini Connection Hall" },
+  { icon: Shirt, label: "Dress code", value: "Denim's vibe, head to toe" },
+];
 
-const EventDetails = () => {
-  const eventDate = new Date('2026-04-06T14:00:00');
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = eventDate.getTime() - now;
-
-      if (distance > 0) {
-        setTimeLeft({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000)
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <section className="py-24 bg-[#f5f1ed]">
-      {/* Section Header */}
-      <div className="container px-6 mx-auto mb-16">
-        <div className="max-w-3xl">
-          <span className="text-[#c8a882] text-sm tracking-[0.2em] uppercase mb-4 block">
-            Event Details
-          </span>
-          <h2 className="font-serif text-5xl md:text-6xl text-[#2a2420] mb-6">
-            Mark Your Calendar
-          </h2>
-          <p className="text-[#6b5d52] text-lg leading-relaxed">
-            Join us for an afternoon of creativity, connection, and celebration. Limited spots available.
-          </p>
-        </div>
-      </div>
-
-      {/* Countdown */}
-      <div className="container px-6 mx-auto mb-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-[#2a2420] p-4 md:p-16">
-            <h3 className="text-[#c8a882] text-sm tracking-[0.2em] uppercase mb-10 text-center">
-              Event Starts In
-            </h3>
-            <div className="grid grid-cols-4 gap-6">
-              {[
-                { label: 'Days', value: timeLeft.days },
-                { label: 'Hours', value: timeLeft.hours },
-                { label: 'Minutes', value: timeLeft.minutes },
-                { label: 'Seconds', value: timeLeft.seconds }
-              ].map((item, index) => (
-                <div key={index} className="text-center">
-                  <div className="bg-[#3a342e] border border-[#4a4238] py-4  md:p-6 mb-3">
-                    <div className="font-serif text-4xl md:text-6xl text-[#f5f1ed]">
-                      {item.value.toString().padStart(2, '0')}
-                    </div>
-                  </div>
-                  <div className="text-[#c8a882] text-xs tracking-wider uppercase">
-                    {item.label}
-                  </div>
+const EventDetails = () => (
+  <section className="denim py-24">
+    <div className="container px-5">
+      {/* Back-pocket card */}
+      <div className="relative mx-auto max-w-4xl">
+        <div
+          className="relative bg-denim-700 stitch px-6 sm:px-12 pt-14 pb-20 sticker"
+          style={{ clipPath: "polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%)" }}
+        >
+          <p className="font-[family-name:var(--font-marker)] text-gold text-2xl text-center">save the date, babe</p>
+          <h2 className="text-center font-[family-name:var(--font-display)] uppercase text-5xl sm:text-7xl text-cream">The deets</h2>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 pb-10">
+            {details.map(({ icon: Icon, label, value }) => (
+              <div key={label} className="flex items-center gap-4 rounded-2xl bg-denim-950/60 p-5 border-2 border-dashed border-denim-300/40">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gold text-denim-950"><Icon className="h-6 w-6" /></span>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-[0.25em] text-denim-300">{label}</div>
+                  <div className="text-lg font-bold text-cream">{value}</div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
+        <div className="absolute top-4 left-4 rivet" />
+        <div className="absolute top-4 right-4 rivet" />
+        <div className="absolute -right-2 -top-6 sm:-right-8 rotate-12 rounded-lg bg-hotpink px-4 py-2 font-[family-name:var(--font-marker)] text-white sticker">limited spots!</div>
       </div>
-
-      {/* Event Info Cards */}
-      <div className="container px-6 mx-auto">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-8 border border-[#e5ddd3] hover:border-[#c8a882] transition-colors duration-300">
-            <Calendar className="w-8 h-8 text-[#c8a882] mb-6" />
-            <h4 className="text-xs tracking-[0.2em] uppercase text-[#8b7d72] mb-3">Date</h4>
-            <p className="text-2xl text-[#2a2420]">April 6<br/>2026</p>
-          </div>
-
-          <div className="bg-white p-8 border border-[#e5ddd3] hover:border-[#c8a882] transition-colors duration-300">
-            <Clock className="w-8 h-8 text-[#c8a882] mb-6" />
-            <h4 className="text-xs tracking-[0.2em] uppercase text-[#8b7d72] mb-3">Time</h4>
-            <p className="text-2xl text-[#2a2420]">2:00 PM<br/>Prompt</p>
-          </div>
-
-          <div className="bg-white p-8 border border-[#e5ddd3] hover:border-[#c8a882] transition-colors duration-300">
-            <MapPin className="w-8 h-8 text-[#c8a882] mb-6" />
-            <h4 className="text-xs tracking-[0.2em] uppercase text-[#8b7d72] mb-3">Venue</h4>
-            <p className="text-2xl text-[#2a2420]">Revealed<br/>Upon Purchase</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+    </div>
+  </section>
+);
 
 export default EventDetails;

@@ -4,84 +4,41 @@ import { useState } from "react";
 import { X } from "lucide-react";
 
 const galleryImages = [
-  { src: "/images/CakeImg.jpeg", alt: "Cake decorating workshop" },
-  { src: "/images/CakeImg2.jpeg", alt: "Signature cocktails" },
-  { src: "/images/CakeImg3.jpeg", alt: "Event atmosphere" },
+  { src: "/images/CakeImg.jpeg", alt: "Guests decorating cakes", cap: "cake bosses 🎂", r: "-rotate-3" },
+  { src: "/images/CakeImg2.jpeg", alt: "Drinks at Cake & Sip", cap: "sip sip hooray", r: "rotate-2" },
+  { src: "/images/CakeImg3.jpeg", alt: "Event atmosphere", cap: "the vibes were vibing", r: "-rotate-1" },
 ];
 
 const Gallery = () => {
-  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [selected, setSelected] = useState<number | null>(null);
 
   return (
-    <section className="py-24 bg-[#f5f1ed]">
-      <div className="container px-6 mx-auto">
-        {/* Header */}
-        <div className="max-w-3xl mb-16">
-          <span className="text-[#c8a882] text-sm tracking-[0.2em] uppercase mb-4 block">
-            Gallery
-          </span>
-          <h2 className="font-serif text-5xl md:text-6xl text-[#2a2420] mb-6">
-            Previous Event Highlights
-          </h2>
-          <p className="text-[#6b5d52] text-lg">
-            A look back at the creativity and connections made at Cake & Sip 1.0
-          </p>
+    <section className="denim-light py-24 text-denim-950">
+      <div className="container px-5">
+        <div className="mb-14">
+          <p className="font-[family-name:var(--font-marker)] text-hotpink text-2xl -rotate-2">throwback!</p>
+          <h2 className="font-[family-name:var(--font-display)] uppercase text-5xl sm:text-7xl leading-[0.9]">Past editions</h2>
         </div>
 
-        {/* Images Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-          {galleryImages.map((image, index) => (
-            <button
-              key={index}
-              onClick={() => setSelectedImage(index)}
-              className="group relative aspect-[4/5] overflow-hidden"
-            >
-              <img 
-                src={image.src} 
-                alt={image.alt}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-[#2a2420]/0 group-hover:bg-[#2a2420]/20 transition-colors duration-300"></div>
+        <div className="grid gap-10 sm:grid-cols-3 mb-16">
+          {galleryImages.map((img, i) => (
+            <button key={img.src} onClick={() => setSelected(i)} className={`${img.r} bg-cream p-3 pb-12 sticker transition hover:rotate-0 hover:scale-105 relative cursor-pointer`}>
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 h-6 w-20 bg-gold/80 rotate-2" />
+              <img src={img.src} alt={img.alt} className="aspect-square w-full object-cover" />
+              <span className="absolute bottom-3 left-0 right-0 font-[family-name:var(--font-marker)] text-lg text-denim-800">{img.cap}</span>
             </button>
           ))}
         </div>
 
-        {/* Video Section */}
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-white p-2 border border-[#e5ddd3]">
-            <div className="relative aspect-video bg-[#2a2420]">
-              <video
-                className="w-full h-full"
-                src="/video/cakeandsip.mp4"
-                controls
-              />
-            </div>
-          </div>
-          <p className="text-center text-sm text-[#8b7d72] mt-6">
-            Highlights from Cake & Sip 1.0
-          </p>
+        <div className="mx-auto max-w-3xl rounded-3xl bg-denim-800 p-3 stitch sticker rotate-1">
+          <video src="/video/cakeandsip.mp4" controls playsInline className="w-full rounded-2xl" />
         </div>
       </div>
 
-      {/* Lightbox */}
-      {selectedImage !== null && (
-        <div 
-          className="fixed inset-0 z-50 bg-[#2a2420]/95 flex items-center justify-center p-6"
-          onClick={() => setSelectedImage(null)}
-        >
-          <button 
-            className="absolute top-8 right-8 text-white/60 hover:text-white transition-colors"
-            onClick={() => setSelectedImage(null)}
-          >
-            <X className="w-8 h-8" />
-          </button>
-          <div className="relative max-w-6xl w-full">
-            <img 
-              src={galleryImages[selectedImage].src}
-              alt={galleryImages[selectedImage].alt}
-              className="w-full h-auto"
-            />
-          </div>
+      {selected !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-denim-950/90 p-4" onClick={() => setSelected(null)}>
+          <button className="absolute top-6 right-6 rounded-full bg-hotpink p-2 text-white" aria-label="Close"><X /></button>
+          <img src={galleryImages[selected].src} alt={galleryImages[selected].alt} className="max-h-[85vh] max-w-full rounded-2xl" />
         </div>
       )}
     </section>

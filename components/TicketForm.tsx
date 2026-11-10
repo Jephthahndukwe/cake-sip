@@ -14,10 +14,35 @@ declare global {
   }
 }
 
+type TicketType = 'single' | 'bestie' | 'group';
+type AttendeeType = 'decorator' | 'guest';
+
+// Ticket prices in Naira. Decorator prices are from the 3.0 flyer.
+// TODO: confirm the vibes-only (non-decorator) prices with the organiser.
+const PRICES: Record<AttendeeType, Record<TicketType, number>> = {
+  decorator: { single: 28500, bestie: 55000, group: 100000 },
+  guest: { single: 15000, bestie: 28000, group: 52000 },
+};
+
+const KINDS: Record<AttendeeType, { label: string; emoji: string; blurb: string }> = {
+  decorator: { label: 'Cake Decorator', emoji: '🎂', blurb: 'Decorate your own cake + all the vibes. You take the cake home!' },
+  guest: { label: 'Vibes Only', emoji: '🍹', blurb: 'Sip, music, games & giveaways. No cake decorating.' },
+};
+
+const TIERS: { id: TicketType; label: string; sub: string; style: string }[] = [
+  { id: 'single', label: 'Single', sub: 'just me & my drip', style: 'bg-cream text-denim-950 -rotate-2' },
+  { id: 'bestie', label: 'Bestie / Couple', sub: 'for two', style: 'bg-gold text-denim-950 rotate-1' },
+  { id: 'group', label: 'Group of 4', sub: 'the whole squad', style: 'bg-hotpink text-white -rotate-1' },
+];
+
+const field = "w-full h-auto rounded-xl border-2 border-denim-950 bg-white px-4 py-4 text-denim-950 font-medium placeholder:text-denim-950/40 focus:border-hotpink focus:outline-none focus:ring-4 focus:ring-hotpink/20 transition";
+const lbl = "mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-denim-950";
+
 const TicketForm = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<'solo' | 'besties'>('solo');
+  const [activeTab, setActiveTab] = useState<TicketType>('single');
+  const [attendeeType, setAttendeeType] = useState<AttendeeType>('decorator');
   const [quantity, setQuantity] = useState(1);
   const [formData, setFormData] = useState({
     name: "",
@@ -31,12 +56,10 @@ const TicketForm = () => {
     karaokeSongChoice: "",
   });
 
-  const ticketPrices = {
-    solo: 25500,
-    besties: 45500
-  };
-
-  const totalAmount = activeTab === 'solo' ? ticketPrices.solo * quantity : ticketPrices.besties;
+  const tier = TIERS.find(t => t.id === activeTab)!;
+  const unitPrice = PRICES[attendeeType][activeTab];
+  const totalAmount = activeTab === 'single' ? unitPrice * quantity : unitPrice;
+  const isDecorator = attendeeType === 'decorator';
 
   useEffect(() => {
     const loadPaystackScript = () => {
@@ -132,13 +155,14 @@ const TicketForm = () => {
                 email: formData.email,
                 phone: formData.phone,
                 ticketType: activeTab,
-                quantity: activeTab === 'solo' ? quantity : 1,
+                attendeeType,
+                quantity: activeTab === 'single' ? quantity : 1,
                 amount: totalAmount,
                 reference: response.reference,
-                cakeFlavors: formData.cakeFlavors,
-                decorationColor: formData.decorationColor,
-                cakeTopper: formData.cakeTopper,
-                cakeName: formData.cakeName,
+                cakeFlavors: isDecorator ? formData.cakeFlavors : [],
+                decorationColor: isDecorator ? formData.decorationColor : '',
+                cakeTopper: isDecorator ? formData.cakeTopper : '',
+                cakeName: isDecorator ? formData.cakeName : '',
                 karaokeInterested: formData.karaokeInterested,
                 karaokeSongChoice: formData.karaokeSongChoice,
               };
@@ -206,9 +230,14 @@ const TicketForm = () => {
               value: activeTab
             },
             {
+              display_name: "Attendee Type",
+              variable_name: "attendee_type",
+              value: attendeeType
+            },
+            {
               display_name: "Quantity",
               variable_name: "quantity",
-              value: activeTab === 'solo' ? quantity : 1
+              value: activeTab === 'single' ? quantity : 1
             }
           ]
         },
@@ -229,337 +258,186 @@ const TicketForm = () => {
   };
 
   return (
-    <section id="ticket-form" className="py-24 bg-white">
-      <div className="container px-6 mx-auto">
-        <div className="max-w-4xl mx-auto">
-          {/* Header */}
-          <div className="mb-16">
-            <span className="text-[#c8a882] text-sm tracking-[0.2em] uppercase mb-4 block">
-              Tickets
-            </span>
-            <h2 className="font-serif text-5xl md:text-6xl text-[#2a2420] mb-6">
-              Reserve Your Spot
-            </h2>
-            <p className="text-[#6b5d52] text-lg">
-              Choose your ticket type and secure your place at this exclusive event.
-            </p>
+    <section id="ticket-form" className="denim-dark py-24">
+      <div className="container px-5">
+        <div className="text-center mb-12">
+          <p className="font-[family-name:var(--font-marker)] text-gold text-2xl -rotate-2">don&apos;t sleep on this</p>
+          <h2 className="font-[family-name:var(--font-display)] uppercase text-5xl sm:text-7xl text-cream">
+            Cop your <span className="text-hotpink">ticket</span>
+          </h2>
+        </div>
+
+        {/* Step 1: ticket kind */}
+        <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-denim-300 mb-4">Step 1 · How are you rolling?</p>
+        <div className="mx-auto max-w-3xl grid gap-5 sm:grid-cols-2 mb-14">
+          {(Object.keys(KINDS) as AttendeeType[]).map((k, i) => {
+            const on = attendeeType === k;
+            const kind = KINDS[k];
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setAttendeeType(k)}
+                disabled={loading}
+                className={`relative rounded-3xl p-6 text-left sticker stitch transition cursor-pointer ${i ? 'rotate-1 bg-denim-500 text-white' : '-rotate-1 bg-hotpink text-white'} ${on ? 'scale-105 rotate-0 ring-4 ring-gold ring-offset-4 ring-offset-denim-950' : 'opacity-70 hover:opacity-100'}`}
+              >
+                {on && <span className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-gold text-denim-950 sticker"><Check className="h-5 w-5" /></span>}
+                <div className="text-4xl">{kind.emoji}</div>
+                <div className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase">{kind.label}</div>
+                <div className="mt-1 font-medium opacity-90">{kind.blurb}</div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Step 2: tier */}
+        <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-denim-300 mb-4">Step 2 · Who&apos;s coming?</p>
+        <div className="mx-auto max-w-5xl grid gap-6 sm:grid-cols-3 mb-12">
+          {TIERS.map(t => {
+            const on = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(t.id)}
+                disabled={loading}
+                className={`${t.style} relative rounded-3xl p-7 text-left sticker transition cursor-pointer ${on ? 'scale-105 ring-4 ring-offset-4 ring-offset-denim-950 ring-hotpink rotate-0' : 'opacity-80 hover:opacity-100 hover:rotate-0'}`}
+              >
+                {on && <span className="absolute -top-3 -right-3 flex h-9 w-9 items-center justify-center rounded-full bg-denim-500 text-white sticker"><Check className="h-5 w-5" /></span>}
+                <div className="text-xs font-bold uppercase tracking-[0.25em] opacity-70">{t.sub}</div>
+                <div className="mt-1 font-[family-name:var(--font-display)] text-3xl uppercase">{t.label}</div>
+                <div className="mt-3 font-[family-name:var(--font-display)] text-5xl">₦{PRICES[attendeeType][t.id].toLocaleString()}</div>
+              </button>
+            );
+          })}
+        </div>
+
+        <form onSubmit={handleSubmit} className="mx-auto max-w-3xl rounded-[2rem] denim-light text-denim-950 p-6 sm:p-12 stitch sticker space-y-8">
+          {activeTab === 'single' && (
+            <div>
+              <Label className={lbl}>How many tickets?</Label>
+              <select value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} className={field} disabled={loading}>
+                {[1, 2, 3, 4, 5].map(num => (
+                  <option key={num} value={num}>
+                    {num} {num === 1 ? 'ticket' : 'tickets'} — ₦{(unitPrice * num).toLocaleString()}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <Label className={lbl}>Your name *</Label>
+              <Input name="name" type="text" value={formData.name} onChange={handleInputChange} required className={field} disabled={loading} placeholder="What do we call you?" />
+            </div>
+            <div>
+              <Label className={lbl}>Phone *</Label>
+              <Input name="phone" type="tel" value={formData.phone} onChange={handleInputChange} required className={field} disabled={loading} placeholder="080..." />
+            </div>
+          </div>
+          <div>
+            <Label className={lbl}>Email *</Label>
+            <Input name="email" type="email" value={formData.email} onChange={handleInputChange} required className={field} disabled={loading} placeholder="you@email.com" />
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-[#f5f1ed] border border-[#e5ddd3]">
-            {/* Ticket Type Selector */}
-            <div className="grid grid-cols-2 border-b border-[#e5ddd3]">
-              <button
-                type="button"
-                onClick={() => setActiveTab('solo')}
-                className={`p-8 text-left transition-colors ${
-                  activeTab === 'solo'
-                    ? 'bg-[#2a2420] text-white'
-                    : 'bg-[#f5f1ed] text-[#2a2420] hover:bg-[#ebe7e2]'
-                }`}
-              >
-                <div className="text-xs tracking-[0.2em] uppercase mb-2 opacity-60">
-                  Individual
-                </div>
-                <div className="text-2xl mb-2">Solo Ticket</div>
-                <div className="text-3xl font-serif">₦{ticketPrices.solo.toLocaleString()}</div>
-              </button>
+          {attendeeType === 'decorator' ? (
+            <div className="border-t-2 border-dashed border-denim-950/40 pt-8">
+              <h3 className="font-[family-name:var(--font-display)] text-3xl uppercase">Design your cake <span className="font-[family-name:var(--font-marker)] normal-case text-hotpink text-2xl">🎂</span></h3>
 
-              <button
-                type="button"
-                onClick={() => setActiveTab('besties')}
-                className={`p-8 text-left border-l border-[#e5ddd3] transition-colors ${
-                  activeTab === 'besties'
-                    ? 'bg-[#2a2420] text-white'
-                    : 'bg-[#f5f1ed] text-[#2a2420] hover:bg-[#ebe7e2]'
-                }`}
-              >
-                <div className="text-xs tracking-[0.2em] uppercase mb-2 opacity-60">
-                  For Two
-                </div>
-                <div className="text-2xl mb-2">Besties Ticket</div>
-                <div className="text-3xl font-serif">₦{ticketPrices.besties.toLocaleString()}</div>
-              </button>
-            </div>
-
-            {/* Form Content */}
-            <div className="py-8 px-4 md:p-12 space-y-8">
-              {/* Quantity for Solo */}
-              {activeTab === 'solo' && (
-                <div>
-                  <Label className="text-xs tracking-[0.1em] uppercase text-[#6b5d52] mb-3 block">
-                    Number of Tickets
-                  </Label>
-                  <select
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                    disabled={loading}
-                  >
-                    {[1, 2, 3, 4, 5].map(num => (
-                      <option key={num} value={num}>
-                        {num} {num === 1 ? 'Ticket' : 'Tickets'} — ₦{(ticketPrices.solo * num).toLocaleString()}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Personal Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label className="text-xs tracking-[0.1em] uppercase text-[#6b5d52] mb-3 block">
-                    Full Name *
-                  </Label>
-                  <Input
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                    disabled={loading}
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-xs tracking-[0.1em] uppercase text-[#6b5d52] mb-3 block">
-                    Phone Number *
-                  </Label>
-                  <Input
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-xs tracking-[0.1em] uppercase text-[#6b5d52] mb-3 block">
-                  Email Address *
-                </Label>
-                <Input
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                  disabled={loading}
-                />
-              </div>
-
-              {/* Cake Customization */}
-              <div className="border-t border-[#e5ddd3] pt-8 mt-8">
-                <h3 className="text-xs tracking-[0.2em] uppercase text-[#6b5d52] mb-6">
-                  Customize Your Cake
-                </h3>
-
-                {/* Cake Flavors */}
-                <div className="mb-8">
-                  <Label className="text-sm text-[#2a2420] mb-4 block">
-                    Select Two Cake Flavors
-                  </Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {['VANILLA CAKE', 'CHOCOLATE CAKE', 'RED VELVET CAKE', 'LEMON CAKE'].map((flavor) => (
+              <div className="mt-6">
+                <Label className={lbl}>Pick two flavours</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {['VANILLA CAKE', 'CHOCOLATE CAKE', 'RED VELVET CAKE', 'LEMON CAKE'].map((flavor) => {
+                    const on = formData.cakeFlavors.includes(flavor);
+                    return (
                       <button
                         key={flavor}
                         type="button"
                         onClick={() => handleCakeFlavorChange(flavor)}
-                        className={`p-4 text-left border transition-colors ${
-                          formData.cakeFlavors.includes(flavor)
-                            ? 'border-[#c8a882] bg-[#c8a882]/10'
-                            : 'border-[#d4cbc0] hover:border-[#c8a882]/50'
-                        }`}
-                        disabled={loading || (!formData.cakeFlavors.includes(flavor) && formData.cakeFlavors.length >= 2)}
+                        disabled={loading || (!on && formData.cakeFlavors.length >= 2)}
+                        className={`flex items-center justify-between rounded-xl border-2 border-denim-950 px-4 py-4 text-sm font-bold uppercase transition disabled:opacity-40 ${on ? 'bg-hotpink text-white sticker' : 'bg-white hover:bg-cream'}`}
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-[#2a2420]">{flavor}</span>
-                          {formData.cakeFlavors.includes(flavor) && (
-                            <Check className="w-4 h-4 text-[#c8a882]" />
-                          )}
-                        </div>
+                        {flavor.replace(' CAKE', '')}
+                        {on && <Check className="h-4 w-4" />}
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
+              </div>
 
-                {/* Decoration Color */}
-                <div className="mb-8">
-                  <Label className="text-sm text-[#2a2420] mb-4 block">
-                    Decoration Color (paired with white)
-                  </Label>
-                  <select
-                    name="decorationColor"
-                    value={formData.decorationColor}
-                    onChange={handleSelectChange}
-                    className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                    disabled={loading}
-                  >
-                    <option value="">Select a color</option>
-                    <option value="BLUE">Blue</option>
-                    <option value="YELLOW">Yellow</option>
-                    <option value="RED">Red</option>
-                    <option value="BLACK">Black</option>
-                    <option value="BROWN">Brown</option>
-                    <option value="ROYAL BLUE">Royal Blue</option>
-                  </select>
-                </div>
+              <div className="mt-6">
+                <Label className={lbl}>Decoration colour (paired with white)</Label>
+                <select name="decorationColor" value={formData.decorationColor} onChange={handleSelectChange} className={field} disabled={loading}>
+                  <option value="">Choose a colour</option>
+                  <option value="BLUE">Blue</option>
+                  <option value="ROYAL BLUE">Royal Blue</option>
+                  <option value="YELLOW">Yellow</option>
+                  <option value="RED">Red</option>
+                  <option value="BLACK">Black</option>
+                  <option value="BROWN">Brown</option>
+                </select>
+              </div>
 
-                {/* Cake Topper */}
-                <div className="mb-8">
-                  <Label className="text-sm text-[#2a2420] mb-4 block">
-                    Choose Your Cake Topper
-                  </Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[
-                      { id: 'SPRINKLE', name: 'Sprinkle', image: '/images/cake.jpg' },
-                      { id: 'RIBBON', name: 'Ribbon', image: '/images/cake2.jpg' },
-                      { id: 'ICE CREAM CONE', name: 'Ice Cream', image: '/images/cake3.jpg' },
-                      { id: 'CHOCOLATE DRIPPING', name: 'Chocolate', image: '/images/cake4.jpg' }
-                    ].map((topper) => (
+              <div className="mt-6">
+                <Label className={lbl}>Choose your topper</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { id: 'SPRINKLE', name: 'Sprinkle', image: '/images/cake.jpg' },
+                    { id: 'RIBBON', name: 'Ribbon', image: '/images/cake2.jpg' },
+                    { id: 'ICE CREAM CONE', name: 'Ice Cream', image: '/images/cake3.jpg' },
+                    { id: 'CHOCOLATE DRIPPING', name: 'Choco Drip', image: '/images/cake4.jpg' },
+                  ].map((topper, i) => {
+                    const on = formData.cakeTopper === topper.id;
+                    return (
                       <button
                         key={topper.id}
                         type="button"
-                        onClick={() => setFormData({...formData, cakeTopper: topper.id})}
-                        className={`relative aspect-square border-2 transition-all ${
-                          formData.cakeTopper === topper.id
-                            ? 'border-[#c8a882]'
-                            : 'border-[#d4cbc0] hover:border-[#c8a882]/50'
-                        }`}
+                        onClick={() => setFormData({ ...formData, cakeTopper: topper.id })}
                         disabled={loading}
+                        className={`relative bg-cream p-2 pb-8 sticker transition ${i % 2 ? 'rotate-2' : '-rotate-2'} ${on ? 'ring-4 ring-hotpink rotate-0 scale-105' : 'hover:rotate-0'}`}
                       >
-                        <img
-                          src={topper.image}
-                          alt={topper.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#2a2420]/60 to-transparent flex items-end p-3">
-                          <span className="text-white text-xs">{topper.name}</span>
-                        </div>
-                        {formData.cakeTopper === topper.id && (
-                          <div className="absolute top-2 right-2 w-6 h-6 bg-[#c8a882] flex items-center justify-center">
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        )}
+                        <img src={topper.image} alt={topper.name} className="aspect-square w-full object-cover" />
+                        <span className="absolute bottom-1.5 left-0 right-0 font-[family-name:var(--font-marker)] text-sm">{topper.name}</span>
+                        {on && <span className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-hotpink text-white"><Check className="h-4 w-4" /></span>}
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-
-                {/* Cake Name */}
-                <div>
-                  <Label className="text-sm text-[#2a2420] mb-4 block">
-                   Name You Will Write On The Cake  (Optional)
-                  </Label>
-                  <Input
-                    name="cakeName"
-                    type="text"
-                    value={formData.cakeName}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Chika"
-                    className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                    disabled={loading}
-                  />
-                </div>
-
-                
-              {/* Karaoke Section */}
-              <div className="border-t border-[#e5ddd3] pt-8 mt-8">
-                <h3 className="text-xs tracking-[0.2em] uppercase text-[#6b5d52] mb-6">
-                  Karaoke
-                </h3>
-                
-                <div className="mb-6">
-                  <Label className="text-sm text-[#2a2420] mb-4 block">
-                    Interested in Karaoke? 🎤
-                  </Label>
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="karaokeInterested"
-                        value="true"
-                        checked={formData.karaokeInterested === true}
-                        onChange={(e) => setFormData({...formData, karaokeInterested: true})}
-                        className="mr-2"
-                        disabled={loading}
-                      />
-                      <span className="text-sm text-[#2a2420]">Yes</span>
-                    </label>
-                    <label className="flex items-center cursor-pointer">
-                      <input
-                        type="radio"
-                        name="karaokeInterested"
-                        value="false"
-                        checked={formData.karaokeInterested === false}
-                        onChange={(e) => setFormData({...formData, karaokeInterested: false, karaokeSongChoice: ''})}
-                        className="mr-2"
-                        disabled={loading}
-                      />
-                      <span className="text-sm text-[#2a2420]">No</span>
-                    </label>
-                  </div>
-                </div>
-
-                {formData.karaokeInterested && (
-                  <div>
-                    <Label className="text-sm text-[#2a2420] mb-4 block">
-                      If yes, please state your song choice (Optional)
-                    </Label>
-                    <Input
-                      name="karaokeSongChoice"
-                      type="text"
-                      value={formData.karaokeSongChoice}
-                      onChange={handleInputChange}
-                      placeholder="Enter your preferred song"
-                      className="w-full px-4 py-4 border border-[#d4cbc0] bg-white text-[#2a2420] focus:border-[#c8a882] focus:outline-none transition-colors"
-                      disabled={loading}
-                    />
-                  </div>
-                )}
               </div>
 
-              </div>
-
-              {/* Total & Submit */}
-              <div className="border-t border-[#e5ddd3] pt-8 mt-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <div className="text-xs tracking-[0.1em] uppercase text-[#6b5d52] mb-1">
-                      Total Amount
-                    </div>
-                    <div className="text-4xl font-serif text-[#2a2420]">
-                      ₦{totalAmount.toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-6 bg-[#c8a882] hover:bg-[#b89872] text-white font-medium tracking-wide transition-colors"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing Payment...
-                    </>
-                  ) : (
-                    `Complete Purchase — ₦${totalAmount.toLocaleString()}`
-                  )}
-                </Button>
-
-                <p className="text-xs text-center text-[#8b7d72] mt-4">
-                  Secure payment powered by Paystack
-                </p>
+              <div className="mt-6">
+                <Label className={lbl}>Name to write on the cake (optional)</Label>
+                <Input name="cakeName" type="text" value={formData.cakeName} onChange={handleInputChange} placeholder="e.g. Chika" className={field} disabled={loading} />
               </div>
             </div>
-          </form>
-        </div>
+          ) : (
+            <div className="rounded-2xl border-2 border-dashed border-denim-950/50 bg-white/60 p-6 -rotate-1">
+              <p className="font-[family-name:var(--font-marker)] text-xl text-hotpink">vibes-only gang 🍹</p>
+              <p className="mt-1 font-medium">You&apos;re in for the sips, music, games, giveaways and photo moments — no cake decorating station. Change your mind? Switch to Cake Decorator above.</p>
+            </div>
+          )}
+
+          <div className="rounded-2xl bg-denim-950 p-6 text-cream">
+            <div className="flex flex-wrap items-end justify-between gap-2 mb-5">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-[0.25em] text-denim-300">Total</div>
+                <div className="font-[family-name:var(--font-display)] text-5xl text-gold">₦{totalAmount.toLocaleString()}</div>
+              </div>
+              <span className="font-[family-name:var(--font-marker)] text-hotpink text-right">
+                {KINDS[attendeeType].label} · {tier.label}{activeTab === 'single' && quantity > 1 ? ` × ${quantity}` : ''}
+              </span>
+            </div>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-auto rounded-2xl bg-hotpink py-5 font-[family-name:var(--font-display)] text-2xl uppercase tracking-wide text-white hover:bg-hotpink/90 transition cursor-pointer"
+            >
+              {loading ? (<><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Processing...</>) : `Pay ₦${totalAmount.toLocaleString()} →`}
+            </Button>
+            <p className="mt-3 text-center text-xs text-cream/50">Secure payment by Paystack</p>
+          </div>
+        </form>
       </div>
     </section>
   );
