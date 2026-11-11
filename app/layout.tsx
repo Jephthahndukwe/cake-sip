@@ -1,18 +1,31 @@
-import type { Metadata } from "next";
-import { Anton, Permanent_Marker, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Caveat, Fraunces, Inter_Tight } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import TopBar from "@/components/TopBar";
+import Footer from "@/components/Footer";
+import MobileTicketBar from "@/components/MobileTicketBar";
+import { EVENT, SITE_URL } from "@/lib/site";
 
-const anton = Anton({ variable: "--font-anton", weight: "400", subsets: ["latin"] });
-const marker = Permanent_Marker({ variable: "--font-pmarker", weight: "400", subsets: ["latin"] });
-const grotesk = Space_Grotesk({ variable: "--font-grotesk", weight: ["400", "500", "700"], subsets: ["latin"] });
+const interTight = Inter_Tight({ variable: "--font-inter-tight", subsets: ["latin"], weight: ["400", "500", "700", "800"], display: "swap" });
+// Soft bakery serif for headlines (variable font with SOFT + WONK axes)
+const fraunces = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], axes: ["SOFT", "WONK", "opsz"], display: "swap" });
+// Handwritten kickers
+const caveat = Caveat({ variable: "--font-caveat", subsets: ["latin"], weight: ["700"], display: "swap" });
+
+const title = `${EVENT.name}: ${EVENT.theme}`;
+const description = `Decorate your own cake, sip, dance and slay in all denim. ${EVENT.dateLong}, ${EVENT.time}, ${EVENT.venue}, Lagos.`;
 
 export const metadata: Metadata = {
-  title: "Cake & Sip 3.0 — Denim's Drip",
-  description:
-    "Kezz The Chef presents Cake & Sip 3.0: Denim's Drip. Decorate your own cake, sip & chill, music, games, giveaways. Saturday, April 3rd 2027, 2PM, Dini Connection Hall.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: title, template: `%s · ${EVENT.name}` },
+  description,
+  openGraph: { title, description, url: SITE_URL, siteName: "Kezz the Chef", type: "website", locale: "en_NG", images: [{ url: "/og/home.jpg", width: 1200, height: 630, alt: title }] },
+  twitter: { card: "summary_large_image", title, description, images: ["/og/home.jpg"] },
 };
+
+export const viewport: Viewport = { themeColor: "#172440" };
 
 export default function RootLayout({
   children,
@@ -20,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${interTight.variable} ${fraunces.variable} ${caveat.variable}`}>
       <head>
         {/* TikTok Pixel */}
         <Script
@@ -62,10 +75,14 @@ export default function RootLayout({
         />
       </head>
 
-      <body
-        className={`${anton.variable} ${marker.variable} ${grotesk.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-magenta-fill focus:px-4 focus:py-2 focus:font-bold focus:text-white">
+          Skip to content
+        </a>
+        <TopBar />
+        <div id="main">{children}</div>
+        <Footer />
+        <MobileTicketBar />
         <Toaster />
       </body>
     </html>

@@ -1,96 +1,109 @@
-'use client';
+"use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, ArrowLeft, Home, Ticket } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { CheckCircle2, MapPin, Calendar, Share2 } from "lucide-react";
+import { EVENT, MAP_URL, SITE_URL, SOCIAL } from "@/lib/site";
+import { confetti } from "@/lib/confetti";
+import { EXPERIENCES, PACKAGES, naira, type Experience, type Package } from "@/lib/tickets";
 
-const SuccessPage = () => {
-  const router = useRouter();
-
-  useEffect(() => {
-    // Get payment details from URL params or localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const reference = urlParams.get('reference');
-    
-    if (!reference) {
-      // If no reference, redirect to home
-      router.push('/');
-    }
-  }, [router]);
-
-  const handleGoHome = () => {
-    router.push('/');
-  };
-
-  return (
-    <div className="min-h-screen bg-[#f5f1ed] flex items-center justify-center px-4 py-12">
-      <div className="max-w-2xl w-full">
-        <div className="text-center">
-          {/* Success Icon */}
-          <div className="mb-8 inline-flex items-center justify-center w-20 h-20 bg-[#c8a882]/10 rounded-full">
-            <CheckCircle className="w-10 h-10 text-[#c8a882]" />
-          </div>
-
-          {/* Success Message */}
-          <h1 className="font-serif text-5xl md:text-6xl mb-6 text-[#2a2420]">
-            Payment Successful
-          </h1>
-          
-          <p className="text-xl text-[#6b5d52] mb-12 leading-relaxed max-w-lg mx-auto">
-            Thank you for your purchase! Your Cake & Sip 3.0 tickets have been confirmed.
-          </p>
-
-          {/* Ticket Details Card */}
-          <div className="bg-white p-8 md:p-12 rounded-xl border border-[#e5ddd3] mb-8 text-left shadow-sm">
-            <div className="flex items-center gap-3 mb-8">
-              <Ticket className="w-8 h-8 text-[#c8a882]" />
-              <h3 className="font-serif text-2xl text-[#2a2420]">
-                Booking Confirmation
-              </h3>
-            </div>
-            
-            <div className="space-y-4 text-lg">
-              <div className="flex justify-between pb-4 border-b border-[#e5ddd3]">
-                <span className="text-[#8b7d72]">Event:</span>
-                <span className="font-medium text-[#2a2420]">Cake & Sip 3.0</span>
-              </div>
-              <div className="flex justify-between pb-4 border-b border-[#e5ddd3]">
-                <span className="text-[#8b7d72]">Date:</span>
-                <span className="font-medium text-[#2a2420]">April 3rd, 2027</span>
-              </div>
-              <div className="flex justify-between pb-4 border-b border-[#e5ddd3]">
-                <span className="text-[#8b7d72]">Time:</span>
-                <span className="font-medium text-[#2a2420]">2:00 PM Prompt</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#8b7d72]">Venue:</span>
-                <span className="font-medium text-[#2a2420] text-right max-w-xs">7/11 Oludegun Avenue, Airport road/Dini connection event center hall Ikeja Lagos</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="space-y-4">
-            <Button
-              onClick={handleGoHome}
-              className="w-full py-6 bg-[#c8a882] hover:bg-[#b89872] text-white font-medium tracking-wide transition-colors duration-300"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-          </div>
-
-          {/* Additional Info */}
-          <div className="mt-12 p-6 bg-[#2a2420] rounded-xl border border-[#4a4238]">
-            <p className="text-[#d4cbc0] leading-relaxed">
-              <span className="font-semibold text-[#c8a882]">Important:</span> A confirmation email with your ticket details has been sent to your registered email address from Paystack. Please keep this email for your records.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+type Booking = {
+  name?: string;
+  attendeeType?: Experience;
+  ticketType?: Package;
+  people?: number;
+  amount?: number;
+  reference: string;
 };
 
-export default SuccessPage;
+export default function SuccessPage() {
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
+
+  useEffect(() => {
+    const reference = new URLSearchParams(window.location.search).get("reference");
+    if (!reference) {
+      window.location.replace("/");
+      return;
+    }
+    fetch(`/api/payments?reference=${encodeURIComponent(reference)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        setBooking(j?.success ? { ...j.data, reference } : { reference });
+        setState(j?.success ? "ready" : "missing");
+        setTimeout(() => confetti(window.innerWidth / 2, window.innerHeight / 4, 70), 200);
+      })
+      .catch(() => {
+        setBooking({ reference });
+        setState("missing");
+      });
+  }, []);
+
+  const shareText = `I just copped my ticket for ${EVENT.name}: ${EVENT.theme} 💙 ${EVENT.dateShort}, ${EVENT.time}. Come with me, bestie! ${SITE_URL}`;
+  const whatsapp = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+  const firstName = booking?.name?.split(" ")[0];
+
+  const rows: [string, string][] = booking
+    ? [
+        ...(booking.attendeeType ? [["Experience", EXPERIENCES[booking.attendeeType]?.label ?? booking.attendeeType] as [string, string]] : []),
+        ...(booking.ticketType
+          ? [["Package", `${PACKAGES[booking.ticketType]?.label ?? booking.ticketType} (${booking.people ?? PACKAGES[booking.ticketType]?.people} ${booking.people === 1 ? "person" : "people"})`] as [string, string]]
+          : []),
+        ...(typeof booking.amount === "number" ? [["Paid", naira(booking.amount)] as [string, string]] : []),
+        ["Reference", booking.reference],
+      ]
+    : [];
+
+  return (
+    <main className="twill flex min-h-screen items-center pb-24 pt-28">
+      <div className="container max-w-3xl">
+        <section className="wash relative isolate overflow-hidden rounded-[2.5rem] px-6 py-14 text-center sm:px-12">
+          <CheckCircle2 className="mx-auto h-14 w-14" aria-hidden />
+          <p className="script mt-6 -rotate-2 text-[2rem] text-cream">payment successful!</p>
+          <h1 className="display mt-4 text-[clamp(2.8rem,11vw,6rem)]">
+            You&apos;re in{firstName ? `, ${firstName}` : ""}!
+          </h1>
+          <p className="mx-auto mt-5 max-w-md text-lg font-medium">
+            Your {EVENT.name} ticket is confirmed. Now go find your best denim.
+          </p>
+        </section>
+
+        <section className="mt-6 rounded-3xl bg-raise p-7 sm:p-9" aria-labelledby="summary-title">
+          <h2 id="summary-title" className="serif-h text-2xl">Booking summary</h2>
+          {state === "loading" ? (
+            <p className="mt-4 text-dim">Loading your booking…</p>
+          ) : (
+            <dl className="mt-4 space-y-2">
+              {rows.map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-4 rounded-2xl bg-denim px-4 py-3">
+                  <dt className="text-dim">{k}</dt>
+                  <dd className="break-all text-right font-bold">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {state === "missing" && (
+            <p className="mt-3 text-sm text-dim">
+              We couldn&apos;t load the full details just now, but your payment went through. Keep your reference and message us on{" "}
+              <a href={SOCIAL.whatsapp.url} target="_blank" rel="noopener noreferrer" className="font-bold text-blush underline">WhatsApp</a> if you need anything.
+            </p>
+          )}
+          <div className="my-6 h-px bg-gold/50" />
+          <div className="space-y-3">
+            <p className="flex items-start gap-3"><Calendar className="h-5 w-5 shrink-0 text-blush" aria-hidden /> {EVENT.dateLong}, {EVENT.time}</p>
+            <a href={MAP_URL} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 hover:text-blush">
+              <MapPin className="h-5 w-5 shrink-0 text-blush" aria-hidden /> {EVENT.venue}, {EVENT.address}
+            </a>
+          </div>
+        </section>
+
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-fill flex-1 text-lg">
+            <Share2 className="h-5 w-5" aria-hidden /> Bring your bestie
+          </a>
+          <Link href="/" className="btn btn-outline flex-1 text-lg">Back to the site</Link>
+        </div>
+      </div>
+    </main>
+  );
+}

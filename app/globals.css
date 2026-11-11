@@ -1,106 +1,143 @@
 @import "tailwindcss";
 
+/* Palette sampled to match the Cake & Sip 2.0 photos. Denim leads, frosting supports, accents stay small. */
 @theme {
-  --color-denim-950: #070d1f;
-  --color-denim-900: #0b1530;
-  --color-denim-800: #12224a;
-  --color-denim-700: #1b3470;
-  --color-denim-500: #3563c9;
-  --color-denim-300: #8fb3ff;
-  --color-wash: #cfe0ff;
-  --color-gold: #f2c46d;
-  --color-gold-deep: #c8912f;
-  --color-hotpink: #ff2e88;
-  --color-cream: #fff6e6;
+  /* Denim (primary surface) */
+  --color-denim: #172440;     /* deep indigo, slightly deepened from #1B2A4A for text contrast */
+  --color-raise: #1f3157;     /* raised denim */
+  --color-raise-2: #27406b;
+  --color-stone: #4a6a9a;     /* stonewash */
+  --color-hair: rgb(255 246 238 / 0.12);
 
-  --font-display: var(--font-anton), "Impact", sans-serif;
-  --font-marker: var(--font-pmarker), "Comic Sans MS", cursive;
-  --font-body: var(--font-grotesk), system-ui, sans-serif;
+  /* Frosting */
+  --color-blush: #f4c7c3;     /* drapes, tablecloths */
+  --color-blush-2: #f2b8b5;
+  --color-cream: #fff6ee;     /* aprons, icing */
+
+  /* Accents */
+  --color-magenta: #e0218a;       /* display words, glows, decoration */
+  --color-magenta-fill: #cf1a7c;  /* fills under white text (passes AA) */
+  --color-gold: #c9a25a;          /* trims, dividers, icon strokes. Never large fills */
+  --color-mint: #8fd6d2;          /* sprinkles, confetti, tiny badges. Never text */
+
+  /* Roles */
+  --color-text: #fff6ee;
+  --color-dim: #c9d3e6;
+  --color-ink: #172440;       /* text on blush/cream/mint */
+
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-script: var(--font-caveat), cursive;
 }
 
 @layer base {
   html { scroll-behavior: smooth; }
   body {
-    background: var(--color-denim-950);
-    color: var(--color-cream);
-    font-family: var(--font-body);
-    overflow-x: hidden;
+    background-color: var(--color-denim);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
+  :focus-visible { outline: 3px solid var(--color-cream); outline-offset: 3px; border-radius: 6px; }
+  ::selection { background: var(--color-magenta-fill); color: #fff; }
 }
 
 @layer utilities {
-  .container { width: 100%; margin-inline: auto; max-width: 1280px; }
+  .container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 1.25rem; }
+  @media (min-width: 768px) { .container { padding-inline: 2.5rem; } }
 
-  /* Denim twill texture */
-  .denim {
-    background-color: var(--color-denim-800);
+  /* Chunky, soft bakery serif */
+  .display { font-family: var(--font-serif); font-weight: 900; font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144; letter-spacing: -0.025em; line-height: .9; }
+  .serif-h { font-family: var(--font-serif); font-weight: 800; font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 48; letter-spacing: -0.015em; line-height: 1.02; }
+  .script { font-family: var(--font-script); font-weight: 700; line-height: 1; }
+
+  .label { font-size: .75rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+
+  /* Real-looking denim: twill weave + stonewash fades */
+  .twill {
+    background-color: var(--color-denim);
     background-image:
-      repeating-linear-gradient(45deg, rgba(255,255,255,.045) 0 2px, transparent 2px 5px),
-      repeating-linear-gradient(-45deg, rgba(0,0,0,.18) 0 1px, transparent 1px 4px),
-      radial-gradient(ellipse at 30% 20%, rgba(143,179,255,.25), transparent 60%),
-      radial-gradient(ellipse at 80% 90%, rgba(0,0,0,.45), transparent 60%);
+      radial-gradient(60% 45% at 15% 10%, rgb(74 106 154 / .28), transparent 70%),
+      radial-gradient(50% 40% at 90% 60%, rgb(74 106 154 / .18), transparent 70%),
+      repeating-linear-gradient(60deg, rgb(255 255 255 / .035) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(-30deg, rgb(0 0 0 / .22) 0 1px, transparent 1px 3px);
   }
-  .denim-dark {
-    background-color: var(--color-denim-950);
+
+  /* Signature denim-wash gradient: indigo -> stonewash -> magenta -> blush, cream highlight.
+     Text sits on the left/top denim side; the pink lives in the right/bottom corner. */
+  .wash {
+    background-color: #2a4170;
     background-image:
-      repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 2px, transparent 2px 5px),
-      repeating-linear-gradient(-45deg, rgba(0,0,0,.25) 0 1px, transparent 1px 4px);
-  }
-  .denim-light {
-    background-color: #a9c4f5;
-    background-image:
-      repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 2px, transparent 2px 5px),
-      repeating-linear-gradient(-45deg, rgba(10,30,80,.12) 0 1px, transparent 1px 4px),
-      radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.45), transparent 65%);
+      radial-gradient(40% 50% at 88% 12%, rgb(255 246 238 / .28), transparent 65%),
+      radial-gradient(45% 60% at 100% 100%, #f2b8b5 0%, transparent 60%),
+      radial-gradient(55% 70% at 85% 80%, #e0218a 0%, transparent 65%),
+      radial-gradient(60% 80% at 30% 30%, #4a6a9a 0%, transparent 70%),
+      repeating-linear-gradient(60deg, rgb(255 255 255 / .03) 0 1px, transparent 1px 4px),
+      linear-gradient(135deg, #172440 0%, #2a4170 50%, #7a2a74 100%);
   }
 
-  /* Gold stitching inside an element */
-  .stitch { position: relative; }
-  .stitch::after {
-    content: ""; position: absolute; inset: 8px; pointer-events: none;
-    border: 2px dashed var(--color-gold); border-radius: inherit; opacity: .85;
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 9999px; font-weight: 800; transition: transform .2s ease, background-color .2s ease, color .2s ease, box-shadow .2s ease; min-height: 48px; padding: .85rem 1.6rem; white-space: nowrap; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-fill { background: var(--color-magenta-fill); color: #fff; box-shadow: 0 10px 30px -10px rgb(224 33 138 / .7); }
+  .btn-fill:hover { background: #b9166f; }
+  .btn-outline { box-shadow: inset 0 0 0 2px var(--color-blush); color: var(--color-cream); }
+  .btn-outline:hover { background: var(--color-blush); color: var(--color-ink); }
+
+  /* Photo frames that echo the event decor: cream/blush border + thin gold inner line + blush glow */
+  .frame { position: relative; background: var(--color-cream); padding: 6px; box-shadow: 0 18px 50px -18px rgb(242 184 181 / .55); }
+  .frame-blush { background: var(--color-blush); }
+  .frame::after { content: ""; position: absolute; inset: 6px; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--color-gold); pointer-events: none; }
+  .frame > * { border-radius: inherit; }
+  .polaroid { padding: 8px 8px 40px; }
+  .polaroid::after { inset: 8px 8px 40px; }
+  .glow-blush { box-shadow: 0 18px 50px -18px rgb(242 184 181 / .55); }
+
+  /* Leather price tag with gold trim */
+  .leather { position: relative; background-color: #4a2a1c; background-image: radial-gradient(ellipse at 30% 20%, #7a4a32, #4a2a1c 75%); color: var(--color-cream); }
+  .leather::after { content: ""; position: absolute; inset: 4px; border-radius: inherit; border: 1.5px dashed var(--color-gold); pointer-events: none; }
+
+  /* Word-by-word reveal */
+  .words .w { display: inline-block; }
+  @media (scripting: enabled) {
+    .words .w { opacity: 0; transform: translateY(.35em); transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+    .words[data-in="true"] .w { opacity: 1; transform: none; }
+    .fade-up { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+    .fade-up[data-in="true"] { opacity: 1; transform: none; }
+    .photo-in img { transform: scale(1.08); transition: transform 1.2s cubic-bezier(.2,.8,.2,1); }
+    .photo-in[data-in="true"] img { transform: scale(1); }
   }
-  .stitch-pink::after { border-color: var(--color-hotpink); }
-  .stitch-white::after { border-color: rgba(255,255,255,.7); }
 
-  .rivet {
-    width: 14px; height: 14px; border-radius: 9999px;
-    background: radial-gradient(circle at 35% 35%, #fff3c4, var(--color-gold) 45%, var(--color-gold-deep) 80%);
-    box-shadow: 0 1px 2px rgba(0,0,0,.6), inset 0 -1px 1px rgba(0,0,0,.3);
-  }
+  .flip { display: inline-block; animation: flip .45s cubic-bezier(.2,.8,.2,1); }
+  @keyframes flip { from { transform: rotateX(-80deg) translateY(-30%); opacity: 0; } to { transform: none; opacity: 1; } }
 
-  .text-gold-shine {
-    background: linear-gradient(180deg, #fff1c9 0%, #f2c46d 40%, #b97d22 70%, #f7d58e 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .text-denim-shine {
-    background: linear-gradient(180deg, #cfe0ff 0%, #5b8cf0 45%, #1b3470 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-  }
-  .outline-text { -webkit-text-stroke: 2px var(--color-cream); color: transparent; }
+  .drip-fall { animation: drip-fall 3.2s ease-in-out infinite; transform-origin: top; }
+  @keyframes drip-fall { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.12); } }
 
-  .sticker { box-shadow: 4px 4px 0 rgba(0,0,0,.45); }
-  .chunky { box-shadow: 6px 6px 0 var(--color-denim-950); }
-  .chunky:hover { box-shadow: 3px 3px 0 var(--color-denim-950); transform: translate(3px,3px); }
+  .confetti-bit { position: fixed; top: 0; left: 0; width: 9px; height: 14px; pointer-events: none; z-index: 100; border-radius: 2px; }
 
-  .torn-top { clip-path: polygon(0 12px,5% 0,11% 10px,17% 2px,24% 12px,31% 1px,38% 10px,45% 0,52% 11px,59% 2px,66% 12px,73% 0,80% 10px,87% 1px,94% 11px,100% 0,100% 100%,0 100%); }
-
-  .animate-marquee { animation: marquee 28s linear infinite; }
-  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-  .animate-float { animation: float 4s ease-in-out infinite; }
-  @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--r,0deg)); } 50% { transform: translateY(-12px) rotate(var(--r,0deg)); } }
-
-  .animate-wiggle:hover { animation: wiggle .4s ease-in-out; }
-  @keyframes wiggle { 0%,100% { rotate: 0deg; } 25% { rotate: -4deg; } 75% { rotate: 4deg; } }
-
-  .animate-drip { animation: drip 2.4s ease-in infinite; }
-  @keyframes drip { 0% { transform: translateY(-4px) scaleY(.6); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(26px) scaleY(1.2); opacity: 0; } }
-
-  .animate-spin-slow { animation: spin 14s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 
   @media (prefers-reduced-motion: reduce) {
-    .animate-marquee, .animate-float, .animate-drip, .animate-spin-slow { animation: none; }
+    html { scroll-behavior: auto; }
+    .words .w, .fade-up, .photo-in img { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .flip, .drip-fall { animation: none; }
+    .btn:hover { transform: none; }
   }
 }
+
+/* Frosting layers sit outside @layer so they always apply, with solid backgrounds. */
+/* Frosting layers: light surfaces re-map the colour roles so every component stays AA */
+.tone-blush, .tone-cream {
+  --color-text: #172440;
+  --color-dim: #3a4a6b;
+  --color-magenta: #b0145f;
+  --color-gold: #7a5a1e;
+  color: var(--color-text);
+}
+.tone-blush { background-color: var(--color-blush); --color-raise: #fff6ee; --color-raise-2: #fffaf5; }
+.tone-cream { background-color: var(--color-cream); --color-raise: #f9e3df; --color-raise-2: #f6d6d2; }
+:is(.tone-blush, .tone-cream) .text-blush:not(.leather *) { color: #a01060; }
+:is(.tone-blush, .tone-cream) .btn-outline { box-shadow: inset 0 0 0 2px #172440; color: #172440; }
+:is(.tone-blush, .tone-cream) .btn-outline:hover { background: #172440; color: #fff6ee; }

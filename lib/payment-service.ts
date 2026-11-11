@@ -1,9 +1,12 @@
+import type { Experience, Package } from "./tickets";
+
 interface PaymentData {
   name: string;
   email: string;
   phone: string;
-  ticketType: 'single' | 'bestie' | 'group';
-  attendeeType: 'decorator' | 'guest';
+  ticketType: Package;
+  attendeeType: Experience;
+  people: number;
   quantity: number;
   amount: number;
   reference: string;

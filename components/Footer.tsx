@@ -1,27 +1,49 @@
-const Footer = () => (
-  <footer className="denim-dark border-t-4 border-dashed border-gold/60 pt-16 pb-10 text-cream">
-    <div className="container px-5">
-      <div className="grid gap-10 md:grid-cols-2 items-end">
-        <div>
-          <h3 className="font-[family-name:var(--font-display)] uppercase text-6xl leading-none">
-            <span className="text-gold-shine">Cake</span> <span className="font-[family-name:var(--font-marker)] normal-case text-hotpink">&amp;</span>{" "}
-            <span className="text-denim-300">Sip</span> <span className="font-[family-name:var(--font-marker)] normal-case text-hotpink text-4xl">3.0</span>
-          </h3>
-          <p className="mt-3 font-[family-name:var(--font-marker)] text-denim-300 text-xl">Denim&apos;s Drip — see you in blue 💙</p>
-          <p className="mt-4 text-sm text-cream/60">By Kezz The Chef Confectionery.</p>
-        </div>
-        <div className="md:text-right space-y-1 font-bold">
-          <p>Saturday, April 3rd 2027 · 2PM</p>
-          <p>Dini Connection Hall</p>
-          <div className="flex md:justify-end gap-5 pt-3 text-gold">
-            <a href="https://instagram.com/Kezz_thechef" target="_blank" rel="noopener noreferrer" className="hover:text-hotpink">@Kezz_thechef</a>
-            <a href="https://www.instagram.com/ktccakeandsip" target="_blank" rel="noopener noreferrer" className="hover:text-hotpink">@ktccakeandsip</a>
+import Link from "next/link";
+import { EVENT, NAV_LINKS, SOCIAL } from "@/lib/site";
+import { Drip } from "./Frosting";
+
+export default function Footer() {
+  return (
+    <footer className="twill relative overflow-hidden bg-denim pb-28 pt-32 md:pb-12">
+      <Drip className="absolute inset-x-0 top-0" />
+      <div className="container relative">
+        <p className="display text-[13.5vw] md:text-[11vw] xl:text-[10rem]">
+          See you <br className="sm:hidden" />in <span className="text-magenta">denim.</span>
+        </p>
+
+        <div className="mt-16 grid gap-10 md:grid-cols-3">
+          <div>
+            <p className="script -rotate-2 text-2xl text-blush">the event</p>
+            <p className="mt-3 text-lg font-bold">{EVENT.name}: {EVENT.theme}</p>
+            <p className="text-dim">{EVENT.dateLong}, {EVENT.time}</p>
+            <p className="text-dim">{EVENT.venue}, {EVENT.city}</p>
+          </div>
+          <div>
+            <p className="script -rotate-2 text-2xl text-blush">say hi</p>
+            <ul className="mt-3 space-y-1.5">
+              {Object.values(SOCIAL).map((s) => (
+                <li key={s.label}>
+                  <a href={s.url} target={s.url.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="font-bold hover:text-blush">
+                    <span className="text-dim font-medium">{s.label}:</span> {s.handle}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="script -rotate-2 text-2xl text-blush">explore</p>
+            <ul className="mt-3 space-y-1.5">
+              {[{ href: "/", label: "Home" }, ...NAV_LINKS].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="font-bold hover:text-blush">{l.label}</Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
-      <p className="mt-12 text-center text-xs text-cream/40">© {new Date().getFullYear()} Kezz The Chef Confectionery</p>
-    </div>
-  </footer>
-);
 
-export default Footer;
+        <p className="mt-16 text-sm text-dim">© {new Date().getFullYear()} {EVENT.brand}. Made in Lagos.</p>
+      </div>
+    </footer>
+  );
+}
